@@ -35,9 +35,10 @@ weather_df %>%
   geom_point(alpha = .5) +
   labs(
     title = "Temperature plot",
-    x = "Minimum daily temperature", 
-    y = "Maximum daily temperature",
-    caption = "Data from rnoaa package"
+    x = "Minimum daily temperature (C)",
+    y = "Maxiumum daily temperature (C)",
+    color = "Location", #图例的名称
+    caption = "Data from the rnoaa package"
   )
 ```
 
