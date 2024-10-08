@@ -244,3 +244,149 @@ weather_df |>
     ##            name cold not_cold
     ##  CentralPark_NY   96      634
     ##    Waterhole_WA  319      395
+
+## General summaries
+
+You can do lots of summaries.
+
+``` r
+weather_df |>
+  group_by(month) |>
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE), #do NOT conclude NA value when doing calculation
+    mean_prec = mean(prcp, na.rm = TRUE),
+    median_tmax = median(tmax),
+    sd_tmax = sd(tmax))
+```
+
+    ## # A tibble: 24 × 5
+    ##    month      mean_tmax mean_prec median_tmax sd_tmax
+    ##    <date>         <dbl>     <dbl>       <dbl>   <dbl>
+    ##  1 2021-01-01     10.9       39.5         5     12.2 
+    ##  2 2021-02-01      9.82      42.6         2.8   12.2 
+    ##  3 2021-03-01     13.7       55.5        NA     NA   
+    ##  4 2021-04-01     16.8       14.7        18.0    9.29
+    ##  5 2021-05-01     19.6       17.3        22.2    9.40
+    ##  6 2021-06-01     24.3       14.1        28.3    8.28
+    ##  7 2021-07-01     25.2       30.7        28.3    6.19
+    ##  8 2021-08-01     25.2       30.6        28.3    6.72
+    ##  9 2021-09-01     22.4       35.4        24.4    7.69
+    ## 10 2021-10-01     18.2       36.0        20.6   10.1 
+    ## # ℹ 14 more rows
+
+You can group by more than one variable.
+
+``` r
+weather_df |>
+  group_by(name, month) |>
+  summarize(
+    mean_tmax = mean(tmax),
+    median_tmax = median(tmax))
+```
+
+    ## `summarise()` has grouped output by 'name'. You can override using the
+    ## `.groups` argument.
+
+    ## # A tibble: 72 × 4
+    ## # Groups:   name [3]
+    ##    name           month      mean_tmax median_tmax
+    ##    <chr>          <date>         <dbl>       <dbl>
+    ##  1 CentralPark_NY 2021-01-01      4.27         5  
+    ##  2 CentralPark_NY 2021-02-01      3.87         2.8
+    ##  3 CentralPark_NY 2021-03-01     12.3         12.2
+    ##  4 CentralPark_NY 2021-04-01     17.6         18.0
+    ##  5 CentralPark_NY 2021-05-01     22.1         22.2
+    ##  6 CentralPark_NY 2021-06-01     28.1         27.8
+    ##  7 CentralPark_NY 2021-07-01     28.4         28.3
+    ##  8 CentralPark_NY 2021-08-01     28.8         28.3
+    ##  9 CentralPark_NY 2021-09-01     24.8         24.4
+    ## 10 CentralPark_NY 2021-10-01     19.9         20.6
+    ## # ℹ 62 more rows
+
+This is a dataframe! Se we can make a plot.
+
+``` r
+weather_df |>
+  group_by(name, month) |>
+  summarize(mean_tmax = mean(tmax, na.rm = TRUE)) |>
+  ggplot(aes(x = month, y = mean_tmax, color = name)) + 
+    geom_point() + geom_line() + 
+    theme(legend.position = "bottom")
+```
+
+    ## `summarise()` has grouped output by 'name'. You can override using the
+    ## `.groups` argument.
+
+<img src="eda_files/figure-gfm/unnamed-chunk-16-1.png" width="90%" />
+
+Suppose you want to summarize many columns.
+
+If you want to summarize multiple columns using the same summary, the
+`across` function is helpful.
+
+``` r
+weather_df |>
+  group_by(name, month) |>
+  summarize(across(tmin:prcp, mean))
+```
+
+    ## `summarise()` has grouped output by 'name'. You can override using the
+    ## `.groups` argument.
+
+    ## # A tibble: 72 × 5
+    ## # Groups:   name [3]
+    ##    name           month       tmin  tmax  prcp
+    ##    <chr>          <date>     <dbl> <dbl> <dbl>
+    ##  1 CentralPark_NY 2021-01-01 -1.15  4.27  18.9
+    ##  2 CentralPark_NY 2021-02-01 -1.39  3.87  46.6
+    ##  3 CentralPark_NY 2021-03-01  3.1  12.3   28.0
+    ##  4 CentralPark_NY 2021-04-01  7.48 17.6   22.8
+    ##  5 CentralPark_NY 2021-05-01 12.2  22.1   35.7
+    ##  6 CentralPark_NY 2021-06-01 18.9  28.1   22.2
+    ##  7 CentralPark_NY 2021-07-01 20.6  28.4   90.9
+    ##  8 CentralPark_NY 2021-08-01 21.8  28.8   84.5
+    ##  9 CentralPark_NY 2021-09-01 17.8  24.8   84.9
+    ## 10 CentralPark_NY 2021-10-01 13.4  19.9   43.1
+    ## # ℹ 62 more rows
+
+Reminder: sometimes your results are easier to read in another format.
+
+``` r
+weather_df |>
+  group_by(name, month) |>
+  summarize(mean_tmax = mean(tmax, na.rm = TRUE)) |> 
+  pivot_wider(
+    names_from = name,
+    values_from = mean_tmax) |> 
+  knitr::kable(digits = 1) #format results in an easier way to read, create a table
+```
+
+    ## `summarise()` has grouped output by 'name'. You can override using the
+    ## `.groups` argument.
+
+| month      | CentralPark_NY | Molokai_HI | Waterhole_WA |
+|:-----------|---------------:|-----------:|-------------:|
+| 2021-01-01 |            4.3 |       27.6 |          0.8 |
+| 2021-02-01 |            3.9 |       26.4 |         -0.8 |
+| 2021-03-01 |           12.3 |       25.9 |          2.6 |
+| 2021-04-01 |           17.6 |       26.6 |          6.1 |
+| 2021-05-01 |           22.1 |       28.6 |          8.2 |
+| 2021-06-01 |           28.1 |       29.6 |         15.3 |
+| 2021-07-01 |           28.4 |       30.0 |         17.3 |
+| 2021-08-01 |           28.8 |       29.5 |         17.2 |
+| 2021-09-01 |           24.8 |       29.7 |         12.6 |
+| 2021-10-01 |           19.9 |       29.1 |          5.5 |
+| 2021-11-01 |           11.5 |       28.8 |          3.5 |
+| 2021-12-01 |            9.6 |       26.2 |         -2.1 |
+| 2022-01-01 |            2.9 |       26.6 |          3.6 |
+| 2022-02-01 |            7.7 |       26.8 |          3.0 |
+| 2022-03-01 |           12.0 |       27.7 |          3.4 |
+| 2022-04-01 |           15.8 |       27.7 |          2.5 |
+| 2022-05-01 |           22.3 |       28.3 |          5.8 |
+| 2022-06-01 |           26.1 |       29.2 |         11.1 |
+| 2022-07-01 |           30.7 |       29.5 |         15.9 |
+| 2022-08-01 |           30.5 |       30.7 |         18.8 |
+| 2022-09-01 |           24.9 |       30.4 |         15.2 |
+| 2022-10-01 |           17.4 |       29.2 |         11.9 |
+| 2022-11-01 |           14.0 |       28.0 |          2.1 |
+| 2022-12-01 |            6.8 |       27.3 |         -0.5 |

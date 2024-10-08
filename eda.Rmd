@@ -130,8 +130,62 @@ weather_df |>
   janitor::tabyl(name, cold) #2x2 table
 ```
 
+## General summaries
 
+You can do lots of summaries.
 
+```{r}
+weather_df |>
+  group_by(month) |>
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE), #do NOT conclude NA value when doing calculation
+    mean_prec = mean(prcp, na.rm = TRUE),
+    median_tmax = median(tmax),
+    sd_tmax = sd(tmax))
+```
+
+You can group by more than one variable.
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(
+    mean_tmax = mean(tmax),
+    median_tmax = median(tmax))
+```
+
+This is a dataframe! Se we can make a plot.
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(mean_tmax = mean(tmax, na.rm = TRUE)) |>
+  ggplot(aes(x = month, y = mean_tmax, color = name)) + 
+    geom_point() + geom_line() + 
+    theme(legend.position = "bottom")
+```
+
+Suppose you want to summarize many columns.
+
+If you want to summarize multiple columns using the same summary, the `across` function is helpful.
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(across(tmin:prcp, mean))
+```
+
+Reminder: sometimes your results are easier to read in another format.
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(mean_tmax = mean(tmax, na.rm = TRUE)) |> 
+  pivot_wider(
+    names_from = name,
+    values_from = mean_tmax) |> 
+  knitr::kable(digits = 1) #format results in an easier way to read, create a table
+```
 
 
 
