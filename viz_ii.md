@@ -183,7 +183,7 @@ ggp_temp_plot =
   viridis::scale_color_viridis( 
     name = "Location", 
     discrete = TRUE
-  ) #in viridis color绿藻色
+  ) #in viridis color绿藻色, `scale_color_viridis` only be used in continuous situation, so we need `discrete = TRUE`
 
 ggp_temp_plot
 ```
@@ -192,3 +192,75 @@ ggp_temp_plot
     ## (`geom_point()`).
 
 ![](viz_ii_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+## Themes
+
+Shift the legend.
+
+``` r
+ggp_temp_plot + 
+  theme(legend.position = "bottom")
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](viz_ii_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+Change the overall theme.
+
+``` r
+ggp_temp_plot + 
+  theme_bw() + #theme black and white
+  theme(legend.position = "bottom")
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](viz_ii_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+``` r
+#use this one the best for professor
+ggp_temp_plot + 
+  theme_minimal() + 
+  theme(legend.position = "bottom")
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](viz_ii_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+``` r
+ggp_temp_plot + 
+  theme_classic() + 
+  theme(legend.position = "bottom")
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](viz_ii_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+``` r
+ggp_temp_plot + 
+  ggthemes::theme_excel() + 
+  theme(legend.position = "bottom")
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](viz_ii_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+``` r
+ggp_temp_plot + 
+  ggthemes::theme_economist() + 
+  theme(legend.position = "bottom")
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](viz_ii_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
