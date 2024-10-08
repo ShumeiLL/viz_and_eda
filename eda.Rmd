@@ -101,8 +101,34 @@ weather_df |>
     n_days = n_distinct(date)) #每月不同的每一天
 ```
 
+## A digression on 2x2 tables
+
+```{r}
+weather_df |> 
+  drop_na(tmax) |> 
+  mutate(
+    cold = case_when(
+      tmax <  5 ~ "cold",
+      tmax >= 5 ~ "not_cold",
+      TRUE      ~ "" #if missing anything
+  )) |> 
+  filter(name != "Molokai_HI") |> 
+  group_by(name, cold) |> 
+  summarize(count = n())
+```
 
 
+```{r}
+weather_df |> 
+  drop_na(tmax) |> 
+  mutate(cold = case_when(
+    tmax <  5 ~ "cold",
+    tmax >= 5 ~ "not_cold",
+    TRUE     ~ ""
+  )) |> 
+  filter(name != "Molokai_HI") |> 
+  janitor::tabyl(name, cold) #2x2 table
+```
 
 
 
