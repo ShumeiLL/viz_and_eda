@@ -32,6 +32,26 @@ weather_df = read_csv("data/weather_df.csv") |>
 weather_df
 ```
 
+## Initial numeric explorations
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = prcp)) + 
+  geom_histogram()
+```
+
+```{r}
+weather_df |> 
+  filter(prcp >= 1000)
+```
+
+```{r}
+weather_df |> 
+  filter(tmax >= 20, tmax <= 30) |> 
+  ggplot(aes(x = tmin, y = tmax, color = name, shape = name)) + 
+  geom_point(alpha = .75)
+```
+
 ## `group_by`
 
 ```{r}
@@ -39,6 +59,49 @@ weather_df |>
   group_by(name, month) |>
   ungroup()
 ```
+
+## counting things
+
+count month observations
+
+```{r}
+weather_df |>
+  group_by(month) |>
+  summarize(n_obs = n()) # n of each month
+```
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(n_obs = n())
+```
+
+we can use `count()`
+
+```{r}
+weather_df |>
+  count(month, name = "n_obs")
+```
+
+**NEVER** use base R's `table`
+
+```{r, eval=FALSE}
+weather_df |>
+  pull(month) |> 
+  table() #do NOT use this function
+```
+
+other helpful counters
+
+```{r}
+weather_df |>
+  group_by(month) |>
+  summarize(
+    n_obs = n(),
+    n_days = n_distinct(date)) #每月不同的每一天
+```
+
+
 
 
 
