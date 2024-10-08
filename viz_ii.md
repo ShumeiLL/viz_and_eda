@@ -343,3 +343,146 @@ ggplot(data = molokai_df, aes(x = date, y = tmax, color = name)) +
     ## (`geom_point()`).
 
 ![](viz_ii_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+
+## `patchwork`
+
+``` r
+weather_df %>%
+  ggplot(aes(x = tmin, fill = name)) +
+  geom_density(alpha = .5) +
+  facet_grid(. ~ name)
+```
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_density()`).
+
+![](viz_ii_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+what happens when you want multipanel plots but cannot facet?
+
+``` r
+tmax_tmin_p = 
+  weather_df |> 
+  ggplot(aes(x = tmax, y = tmin, color = name)) + 
+  geom_point(alpha = .5) +
+  theme(legend.position = "none")
+
+prcp_dens_p = 
+  weather_df |> 
+  filter(prcp > 0) |> 
+  ggplot(aes(x = prcp, fill = name)) + 
+  geom_density(alpha = .5) + 
+  theme(legend.position = "none")
+
+tmax_date_p = 
+  weather_df |> 
+  ggplot(aes(x = date, y = tmax, color = name)) + 
+  geom_point(alpha = .5) +
+  geom_smooth(se = FALSE) + 
+  theme(legend.position = "bottom")
+
+(tmax_tmin_p + prcp_dens_p) / tmax_date_p
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+    ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_smooth()`).
+    ## Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](viz_ii_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+
+``` r
+tmax_tmin_p / (prcp_dens_p + tmax_date_p) #plots position 图片摆放位置
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+    ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_smooth()`).
+    ## Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](viz_ii_files/figure-gfm/unnamed-chunk-19-2.png)<!-- -->
+
+``` r
+#combine multiple panels
+```
+
+## Data manipulation
+
+Control your factors.
+
+``` r
+weather_df |>
+  ggplot(aes(x = name, y = tmax, fill = name)) +
+  geom_violin(alpha = .5)
+```
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_ydensity()`).
+
+![](viz_ii_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+change the order
+
+``` r
+weather_df |>
+  mutate(name = forcats::fct_relevel(name, c("Molokai_HI", "CentralPark_NY", "Waterhole_WA"))) |> 
+  ggplot(aes(x = name, y = tmax)) + 
+  geom_violin(aes(fill = name), color = "blue", alpha = .5) + 
+  theme(legend.position = "bottom")
+```
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_ydensity()`).
+
+![](viz_ii_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+
+``` r
+weather_df |>
+  mutate(name = forcats::fct_reorder(name, tmax)) |> 
+  ggplot(aes(x = name, y = tmax)) + 
+  geom_violin(aes(fill = name), color = "blue", alpha = .5) + 
+  theme(legend.position = "bottom")
+```
+
+    ## Warning: There was 1 warning in `mutate()`.
+    ## ℹ In argument: `name = forcats::fct_reorder(name, tmax)`.
+    ## Caused by warning:
+    ## ! `fct_reorder()` removing 17 missing values.
+    ## ℹ Use `.na_rm = TRUE` to silence this message.
+    ## ℹ Use `.na_rm = FALSE` to preserve NAs.
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_ydensity()`).
+
+![](viz_ii_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+
+What if I wanted densities for tmin and tmax simultaneously? tmax and
+tmin的密度
+
+``` r
+weather_df |>
+  select(name, tmax, tmin) |> 
+  pivot_longer(
+    tmax:tmin,
+    names_to = "observation", 
+    values_to = "temp") |> 
+  ggplot(aes(x = temp, fill = observation)) +
+  geom_density(alpha = .5) + 
+  facet_grid(~name) + 
+  viridis::scale_fill_viridis(discrete = TRUE)
+```
+
+    ## Warning: Removed 34 rows containing non-finite outside the scale range
+    ## (`stat_density()`).
+
+![](viz_ii_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
