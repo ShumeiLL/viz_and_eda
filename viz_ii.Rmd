@@ -1,0 +1,45 @@
+---
+title: "Visualization"
+subtitle: "Part I"
+author: "Shumei Liu"
+date: "2024-10-08"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+library(patchwork)
+```
+
+## Load the weather data
+
+```{r}
+weather_df = read_csv("data/weather_df.csv")
+
+weather_df
+```
+
+## Remember this plot?
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = .5)
+```
+
+## Labels
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = .5) +
+  labs(
+    title = "Temperature plot",
+    x = "Minimum daily temperature", 
+    y = "Maximum daily temperature",
+    caption = "Data from rnoaa package"
+  )
+```
+
+
+
