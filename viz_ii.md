@@ -322,3 +322,24 @@ scale_fill_discrete = scale_fill_viridis_d
 ```
 
 确保全局的plot都保持以上相同属性
+
+## Data argument in `geom_*`
+
+``` r
+central_park_df = 
+  weather_df |> 
+  filter(name == "CentralPark_NY")
+
+molokai_df = 
+  weather_df |> 
+  filter(name == "Molokai_HI")
+
+ggplot(data = molokai_df, aes(x = date, y = tmax, color = name)) + 
+  geom_point() + 
+  geom_line(data = central_park_df) #one dataset use point plot, the other one use line plot
+```
+
+    ## Warning: Removed 1 row containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](viz_ii_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
