@@ -187,5 +187,70 @@ weather_df |>
   knitr::kable(digits = 1) #format results in an easier way to read, create a table
 ```
 
+## `group_by` and `mutate`
+
+```{r}
+weather_df |>
+  group_by(name) |>
+  mutate(
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    centered_tmax = tmax - mean_tmax) |> 
+  ggplot(aes(x = date, y = centered_tmax, color = name)) + 
+    geom_point() 
+```
+
+## Window functions
+
+what about window functions?
+
+ranking
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  mutate(temp_ranking = min_rank(tmax))
+```
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  filter(min_rank(tmax) < 2)
+```
+
+keep the three days with the highest max temperature
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  filter(min_rank(desc(tmax)) < 4)
+```
+
+lag 滞后
+
+```{r}
+weather_df |>
+  group_by(name) |>
+  mutate(lag_temp = lag(tmax)) 
+#创建新的一列并向下移动一格，例如此处lag(tmax)，所以复制tmax重命名为lag_temp，并且相应的数据向下移动一格
+```
+
+```{r}
+weather_df |>
+  group_by(name) |>
+  mutate(temp_change = tmax - lag(tmax))
+```
+
+```{r}
+weather_df |>
+  group_by(name) |>
+  mutate(temp_change = tmax - lag(tmax)) |>
+  summarize(
+    temp_change_sd = sd(temp_change, na.rm = TRUE),
+    temp_change_max = max(temp_change, na.rm = TRUE))
+```
+
+
+
+
 
 
