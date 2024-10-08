@@ -296,3 +296,29 @@ ggplot(weather_df, aes(x = date, y = tmax, color = name)) +
 ![](viz_ii_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 ## Setting options
+
+A few other figure preferences in global options declared at the outset
+of each .Rmd file, this code chunk just gets copy-and-pasted to the
+beginning of every new file.
+
+``` r
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+确保全局的plot都保持以上相同属性
