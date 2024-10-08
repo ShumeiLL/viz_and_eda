@@ -1,0 +1,228 @@
+---
+title: "Visualization"
+subtitle: "Part I"
+author: "Shumei Liu"
+date: "2024-10-08"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+library(ggridges) #run the ridge plot
+```
+
+## Load the weather data
+
+```{r}
+weather_df = read_csv("data/weather_df.csv")
+
+weather_df
+```
+
+The following code does not work! Don't know why!
+
+`weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USW00022534", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2021-01-01",
+    date_max = "2022-12-31") |>
+  mutate(
+    name = case_match(
+      id, 
+      "USW00094728" ~ "CentralPark_NY", 
+      "USW00022534" ~ "Molokai_HI",
+      "USS0023B17S" ~ "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10) |>
+  select(name, id, everything())`
+
+
+## Scatterplots!
+
+Create my first scatterplot ever.
+
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point()
+```
+
+New approach, same plot.
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point()
+```
+
+Save and edit a plot object.
+
+```{r}
+weather_plot =
+  weather_df %>%
+  ggplot(aes(x = tmin, y = tmax))
+
+weather_plot + geom_point()
+```
+
+## Advanced scatterplot ...
+
+Start with the same one and make it fancy!
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax, colour = name)) +
+  geom_point() +
+  geom_smooth(se = FALSE)
+```
+
+What about the `aes` placement?
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point(aes(colour = name)) +
+  geom_smooth() #only have a blue line, because the color only use for the geom_point
+```
+
+Let's facet some things!
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax, alpha = tmin, colour = name)) + #"alpha" is 点的透明度
+  geom_point() +
+  geom_smooth(se = FALSE, size = 1) +
+  facet_grid(. ~ name) #"." means the row does not need to be defined, only use "name" to define the columns
+```
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax, colour = name)) +
+  geom_point(alpha = .3, size = .8) +
+  geom_smooth(se = FALSE) +
+  facet_grid(name ~ .) #create the row not the column
+```
+
+Let's combine some elements and try a new plot.
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point(aes(size = prcp), alpha = .5) + #"size = prcp" 降雨量
+  geom_smooth(se = FALSE) +
+  facet_grid(. ~ name)
+```
+
+
+## Some small notes
+
+How many geoms have to exist?
+
+You can have whatever geoms you want. 
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_smooth(se = FALSE)
+```
+
+You can use a neat geom!
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_hex()
+```
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_bin2d()
+```
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_density_2d() +
+  geom_point(alpha = .3)
+```
+
+
+## Univariate plots 单变量
+
+Histograms are really great.
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin)) +
+  geom_histogram()
+```
+
+Can we add color?
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, fill = name)) + #"fill" 填充颜色
+  geom_histogram(position = "dodge") #让不同颜色的直方图并列而不重合
+```
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin)) +
+  geom_histogram() +
+  facet_grid(. ~ name)
+```
+
+Let's try a new geometry!
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, fill = name)) +
+  geom_density(alpha = .3) 
+```
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, fill = name)) +
+  geom_density(alpha = .3, adjust = .5) #"adjust"看到单个数据的小突起
+```
+
+What about box plot??
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = name, y = tmin)) +
+  geom_boxplot()
+```
+
+Trendy plots :-)
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = name, y = tmin, fill = name)) +
+  geom_violin(alpha = .5) +
+  stat_summary(fun = "median")
+```
+
+similar
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = name, y = tmin, fill = name)) +
+  geom_violin(alpha = .5) +
+  stat_summary()
+```
+
+Ridge plots -- the most popular plot of 2017 山脊图
+`library(ggridges)`
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, y = name)) +
+  geom_density_ridges()
+```
+
+
+
+
+
